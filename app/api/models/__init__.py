@@ -1,2 +1,7 @@
 from app.api.models.user import User  # noqa: F401
-from app.api.models.announcement import Announcement, Signatory, announcement_signatories # noqa: F401
+from app.api.models.student_profile import StudentProfile  # noqa: F401
+from app.api.models.announcement import (
+    Announcement,  # noqa: F401
+    Signatory,  # noqa: F401
+    announcement_signatories,  # noqa: F401
+)

@@ -10,12 +10,14 @@ class User(BaseTableModel):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=True)
+    role = Column(String, nullable=False, default="student")  # 'student' or 'admin'
 
     def to_dict(self):
         return {
             "id": self.id,
             "username": self.username,
             "email": self.email,
+            "role": self.role,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
