@@ -28,11 +28,14 @@ class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
 
+    # Paystack configurations
+    PAYSTACK_SECRET_KEY: str
+    PAYSTACK_PUBLIC_KEY: str
+
     # Directories
     MEDIA_DIR: str = os.path.join(BASE_DIR, "media")
     STATIC_DIR: str = os.path.join(BASE_DIR, "static")
     TEMPLATES_DIR: str = os.path.join(BASE_DIR, "templates")
-    
 
     @property
     def database_url(self) -> str:
