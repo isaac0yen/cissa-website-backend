@@ -14,7 +14,7 @@ class UserRepository(BaseRepository[User]):
 
     def __init__(self, db: Session):
         super().__init__(User, db)
-    
+
     def get_by_email(self, email: str) -> User:
         """Get a user by email.
 
@@ -25,3 +25,14 @@ class UserRepository(BaseRepository[User]):
             User: The user object if found, None otherwise.
         """
         return self.db.query(self.model).filter(self.model.email == email).first()
+
+    def get_by_username(self, username: str) -> User:
+        """Get a user by username.
+
+        Args:
+            username (str): The username of the user.
+
+        Returns:
+            User: The user object if found, None otherwise.
+        """
+        return self.db.query(self.model).filter(self.model.username == username).first()

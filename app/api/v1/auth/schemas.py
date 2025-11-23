@@ -14,6 +14,7 @@ class LoginRequest(BaseModel):
     email: Annotated[EmailStr, StringConstraints(max_length=254)]
     password: str
 
+
 class TokenRefreshRequest(BaseModel):
     refresh_token: str
 
@@ -32,6 +33,7 @@ class AuthResponse(BaseResponseModel):
     access_token: str
     refresh_token: str
     data: AuthResponseData
+
 
 class UserResponse(BaseResponseModel):
     data: AuthResponseData
