@@ -166,15 +166,23 @@ def get_all_announcements(
 
     paginated_data = service.list_announcements(page=page, page_size=page_size)
 
-    paginated_data.items = [
+    announcement_items = [
         schemas.AnnouncementResponse(**announcement.to_dict())
         for announcement in paginated_data.items
     ]
 
+    paginated_response = schemas.AnnouncementsPaginatedData(
+        total_items=paginated_data.total_items,
+        total_pages=paginated_data.total_pages,
+        current_page=paginated_data.current_page,
+        page_size=paginated_data.page_size,
+        items=announcement_items,
+    )
+
     return schemas.AnnouncementsListResponseModel(
         status_code=status.HTTP_200_OK,
         message="Announcements retrieved successfully",
-        data=paginated_data,
+        data=paginated_response,
     )
 
 
