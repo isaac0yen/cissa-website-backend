@@ -5,9 +5,11 @@ from app.core.base.schema import BaseResponseModel
 
 
 class RegisterRequest(BaseModel):
-    password: str
-    email: Annotated[EmailStr, StringConstraints(max_length=254)]
     username: Annotated[str, StringConstraints(max_length=70)]
+    email: Annotated[EmailStr, StringConstraints(max_length=254)]
+    password: str
+    first_name: Annotated[str, StringConstraints(max_length=100)]
+    last_name: Annotated[str, StringConstraints(max_length=100)]
 
 
 class LoginRequest(BaseModel):
@@ -27,6 +29,7 @@ class AuthResponseData(BaseModel):
     id: str
     username: str
     email: EmailStr
+    role: str
 
 
 class AuthResponse(BaseResponseModel):
