@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 
 from app.db.database import get_db
-from app.core.dependencies.security import get_current_user
+from app.core.dependencies.security import get_current_admin
 
 from app.api.v1.announcement import schemas
 from app.api.services.announcement import AnnouncementService, SignatoryService
@@ -23,7 +23,7 @@ announcement = APIRouter(prefix="/announcements", tags=["Announcements"])
 def create_signatory(
     schema: schemas.SignatoryRequest,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to create a new signatory
 
@@ -55,7 +55,7 @@ def create_signatory(
 )
 def get_all_signatories(
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to retrieve all signatories
 
@@ -91,7 +91,7 @@ def update_signatory(
     signatory_id: str,
     schema: schemas.SignatoryUpdateRequest,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to update an existing signatory
 
@@ -124,7 +124,7 @@ def update_signatory(
 def delete_signatory(
     signatory_id: str,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to delete an existing signatory
 
@@ -188,7 +188,7 @@ def get_all_announcements(
 async def create_announcement(
     schema: Annotated[schemas.AnnouncementForm, Form()],
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to create a new announcement
 
@@ -222,7 +222,7 @@ async def update_announcement(
     announcement_id: str,
     schema: Annotated[schemas.AnnouncementUpdateForm, Form()],
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to update an existing announcement
 
@@ -287,7 +287,7 @@ def get_announcement_by_id(
 def delete_announcement(
     announcement_id: str,
     db: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_admin)],
 ):
     """Endpoint to delete an existing announcement
 

@@ -9,7 +9,6 @@ from app.utils.jwt_helpers import verify_jwt_token
 from app.core import response_messages
 
 
-
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
@@ -45,3 +44,43 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
+
+def get_current_admin(current_user: Annotated[User, Depends(get_current_user)]) -> User:
+    """Dependency to verify current user is an admin
+
+    Args:
+        current_user: Current authenticated user
+
+    Returns:
+        User: Admin user object
+
+    Raises:
+        HTTPException: If user is not an admin
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
+        )
+    return current_user
+
+
+def get_current_student(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    """Dependency to verify current user is a student
+
+    Args:
+        current_user: Current authenticated user
+
+    Returns:
+        User: Student user object
+
+    Raises:
+        HTTPException: If user is not a student
+    """
+    if current_user.role != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Student access required"
+        )
+    return current_user
