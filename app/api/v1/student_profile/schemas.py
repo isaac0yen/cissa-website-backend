@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from pydantic import BaseModel, StringConstraints
 from app.core.base.schema import BaseResponseModel
 
@@ -17,8 +17,8 @@ class StudentProfileData(BaseModel):
 class UpdateStudentProfileRequest(BaseModel):
     """Request schema for updating student profile"""
 
-    first_name: Annotated[str, StringConstraints(max_length=100)]
-    last_name: Annotated[str, StringConstraints(max_length=100)]
+    first_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
+    last_name: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
 
 
 class StudentProfileResponse(BaseResponseModel):

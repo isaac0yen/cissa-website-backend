@@ -55,9 +55,15 @@ class StudentProfileService:
         """
         profile = self.get_profile_by_user_id(user_id)
 
+        if not profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Student profile not found",
+            )
+
         # Update fields
-        profile.first_name = schema.first_name
-        profile.last_name = schema.last_name
+        for key, value in schema.model_dump(exclude_unset=True).items():
+            setattr(profile, key, value)
 
         updated_profile = self.repository.update(profile)
         logger.info(f"Updated student profile for user: {user_id}")
