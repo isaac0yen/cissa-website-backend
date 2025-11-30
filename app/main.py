@@ -34,7 +34,6 @@ app = FastAPI(
     docs_url="/v1/docs",
     redoc_url="/v1/redoc",
     openapi_url="/v1/openapi.json",
-
 )
 
 app.state.limiter = limiter

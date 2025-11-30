@@ -178,3 +178,4 @@ cython_debug/
 
 cbt_plan.txt
 dbml.txt
+posting.env
