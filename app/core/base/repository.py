@@ -34,6 +34,19 @@ class BaseRepository(Generic[T]):
         self.db.refresh(obj)
         return obj
 
+    def create_bulk(self, objects: List[T]) -> List[T]:
+        """Create multiple objects in bulk.
+        Args:
+            objects (List[T]): List of objects to create.
+        Returns:
+            List[T]: List of created objects.
+        """
+        self.db.add_all(objects)
+        self.db.commit()
+        for obj in objects:
+            self.db.refresh(obj)
+        return objects
+
     def get(self, id: str) -> Optional[T]:
         """Get an object of the model by id.
         Args:
@@ -95,7 +108,7 @@ class BaseRepository(Generic[T]):
             self.db.commit()
             return True
         return False
-    
+
     def base_query(self) -> Query[T]:
         """Get the base query for the model.
 
@@ -106,10 +119,8 @@ class BaseRepository(Generic[T]):
         """
 
         return self.db.query(self.model)
-    
-    def paginate(
-        self, query: Query[T], page: int, page_size: int
-    ) -> PaginatedResponse:
+
+    def paginate(self, query: Query[T], page: int, page_size: int) -> PaginatedResponse:
         """Paginate the results of a query.
 
         Args:
@@ -135,5 +146,3 @@ class BaseRepository(Generic[T]):
             page_size=page_size,
             items=query.offset((page - 1) * page_size).limit(page_size).all(),
         )
-
-

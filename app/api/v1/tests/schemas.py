@@ -6,7 +6,7 @@ from app.core.base.schema import BaseResponseModel, PaginatedResponse
 
 # test creation schema
 class TestCreateSchema(BaseModel):
-    course_code: Annotated[str, StringConstraints(max_length=50)]
+    course_code: Annotated[str, StringConstraints(max_length=10)]
     course_title: Annotated[str, StringConstraints(max_length=255)]
     duration: int
     questions_per_attempt: int

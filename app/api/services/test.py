@@ -12,7 +12,7 @@ from app.utils.logger import logger
 class TestService:
     """
     Test service class for handling test-related operations.
-    This class provides methods for creating, retrieving, updating, 
+    This class provides methods for creating, retrieving, updating,
     publishing, and deleting tests.
     """
 
@@ -21,10 +21,10 @@ class TestService:
 
     def create(self, schema: schemas.TestCreateSchema) -> Test:
         """Creates a new test (unpublished by default)
-        
+
         Args:
             schema: Test creation schema
-            
+
         Returns:
             Test: Test object for the newly created test
         """
@@ -45,10 +45,10 @@ class TestService:
 
     def get_by_id(self, test_id: str) -> Test:
         """Retrieves a test by ID
-        
+
         Args:
             test_id (str): ID of the test to retrieve
-            
+
         Returns:
             Test: Test object
         """
@@ -60,10 +60,6 @@ class TestService:
             )
         return test
 
-    # TODO: Implement method to get test with question count
-    # def get_with_question_count(self, test_id: str) -> tuple[Test, int]:
-    #     pass
-
     def list_tests(
         self,
         page: int = 1,
@@ -73,14 +69,14 @@ class TestService:
         course_code: Optional[str] = None,
     ) -> PaginatedResponse:
         """Retrieves a paginated list of tests with optional filters
-        
+
         Args:
             page (int): Page number (default: 1)
             page_size (int): Number of items per page (default: 10)
             is_published (Optional[bool]): Filter by publication status
             course_title (Optional[str]): Search by course title
             course_code (Optional[str]): Search by course code
-            
+
         Returns:
             PaginatedResponse: Paginated response containing tests
         """
@@ -98,11 +94,11 @@ class TestService:
 
     def update(self, test_id: str, schema: schemas.TestUpdateSchema) -> Test:
         """Updates an existing test
-        
+
         Args:
             test_id (str): ID of the test to update
             schema: Test update schema
-            
+
         Returns:
             Test: Updated test object
         """
@@ -128,13 +124,13 @@ class TestService:
 
     def publish(self, test_id: str) -> Test:
         """Publishes a test after validation
-        
+
         Args:
             test_id (str): ID of the test to publish
-            
+
         Returns:
             Test: Published test object
-            
+
         Raises:
             HTTPException: If validation fails
         """
@@ -151,48 +147,61 @@ class TestService:
                 detail="Test is already published",
             )
 
-        # TODO: Validate: Must have enough questions
-        # questions = self.db.query(Question).filter(
-        #     Question.test_id == test_id
-        # ).all()
+        # Validate: Must have enough questions
+        questions = test.questions  # Get questions via relationship
+        question_count = len(questions)
 
-        # if len(questions) < test.questions_per_attempt:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST,
-        #         detail=f"Test must have at least {test.questions_per_attempt} questions. "
-        #                f"Currently has {len(questions)}.",
-        #     )
+        if question_count < test.questions_per_attempt:
+            logger.error(
+                f"Test {test_id} validation failed: "
+                f"Has {question_count} questions but needs {test.questions_per_attempt}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    f"Test must have at least {test.questions_per_attempt} questions. "
+                    f"Currently has {question_count} question(s)."
+                ),
+            )
 
-        # TODO: Validate each question
-        # validation_errors = []
-        # for i, question in enumerate(questions):
-        #     options = self.db.query(Option).filter(
-        #         Option.question_id == question.id
-        #     ).all()
+        # Validate each question has proper options
+        validation_errors = []
+        for idx, question in enumerate(questions, start=1):
+            options = question.options  # Get options via relationship
+            option_count = len(options)
 
-        #     # Must have at least 2 options
-        #     if len(options) < 2:
-        #         validation_errors.append(
-        #             f"Question '{question.question_text[:50]}...' must have at least 2 options"
-        #         )
-        #         continue
+            # Must have at least 2 options
+            if option_count < 2:
+                validation_errors.append(
+                    f"Question #{idx} '{question.question_text[:50]}...' "
+                    f"must have at least 2 options (has {option_count})"
+                )
+                continue
 
-        #     # Must have exactly 1 correct answer
-        #     correct_count = sum(1 for opt in options if opt.is_correct)
-        #     if correct_count != 1:
-        #         validation_errors.append(
-        #             f"Question '{question.question_text[:50]}...' must have exactly 1 correct answer "
-        #             f"(has {correct_count})"
-        #         )
+            # Must have exactly 1 correct answer
+            correct_count = sum(1 for opt in options if opt.is_correct)
+            if correct_count != 1:
+                validation_errors.append(
+                    f"Question #{idx} '{question.question_text[:50]}...' "
+                    f"must have exactly 1 correct answer (has {correct_count})"
+                )
 
-        # if validation_errors:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_400_BAD_REQUEST,
-        #         detail={
-        #             "message": "Test validation failed",
-        #             "errors": validation_errors,
-        #         },
-        #     )
+        if validation_errors:
+            logger.error(
+                f"Test {test_id} validation failed with {len(validation_errors)} error(s)"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": f"Test validation failed: {len(validation_errors)} error(s) found",
+                    "errors": validation_errors,
+                },
+            )
+
+        logger.info(
+            f"Test {test_id} validation passed: "
+            f"{question_count} questions, all properly configured"
+        )
 
         try:
             logger.info(f"Publishing test with ID: {test_id}")
@@ -206,10 +215,10 @@ class TestService:
 
     def unpublish(self, test_id: str) -> Test:
         """Unpublishes a test
-        
+
         Args:
             test_id (str): ID of the test to unpublish
-            
+
         Returns:
             Test: Unpublished test object
         """
@@ -238,10 +247,10 @@ class TestService:
 
     def delete(self, test_id: str) -> bool:
         """Deletes a test and all associated questions/options (cascade)
-        
+
         Args:
             test_id (str): ID of the test to delete
-            
+
         Returns:
             bool: True if deletion was successful
         """
