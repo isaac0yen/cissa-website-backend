@@ -3,16 +3,18 @@ from sqlalchemy.orm import Session
 from typing import Annotated, Optional
 
 from app.db.database import get_db
-from app.core.dependencies.security import get_current_admin
+from app.core.dependencies.security import get_current_admin, get_current_student
 
 from app.api.v1.tests import schemas
 from app.api.services.test import TestService
 from app.api.models.user import User
 
-test_router = APIRouter(prefix="/admin/tests", tags=["Admin Test Management"])
+test_management_router = APIRouter(prefix="/admin/tests", tags=["Admin Test Management"])
+test_student_router = APIRouter(prefix="/tests", tags=["Student Test Management"])
 
+# Test Management Endpoints for Admins
 
-@test_router.post(
+@test_management_router.post(
     path="/",
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.TestResponseModel,
@@ -45,7 +47,7 @@ def create_test(
     )
 
 
-@test_router.get(
+@test_management_router.get(
     path="/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.TestsListResponseModel,
@@ -102,7 +104,7 @@ def get_all_tests(
     )
 
 
-@test_router.get(
+@test_management_router.get(
     path="/{test_id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.TestResponseModel,
@@ -135,7 +137,7 @@ def get_test_by_id(
     )
 
 
-@test_router.put(
+@test_management_router.put(
     path="/{test_id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.TestResponseModel,
@@ -170,7 +172,7 @@ def update_test(
     )
 
 
-@test_router.patch(
+@test_management_router.patch(
     path="/{test_id}/publish",
     status_code=status.HTTP_200_OK,
     response_model=schemas.TestResponseModel,
@@ -203,7 +205,7 @@ def publish_test(
     )
 
 
-@test_router.patch(
+@test_management_router.patch(
     path="/{test_id}/unpublish",
     status_code=status.HTTP_200_OK,
     response_model=schemas.TestResponseModel,
@@ -236,7 +238,7 @@ def unpublish_test(
     )
 
 
-@test_router.delete(
+@test_management_router.delete(
     path="/{test_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an existing test",
@@ -260,3 +262,60 @@ def delete_test(
     service.delete(test_id=test_id)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+# Student Test Management Endpoints
+
+# endpoint to get only published tests for students
+@test_student_router.get(
+    path="/",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.TestsListResponseModel,
+    summary="Get all published tests",
+    description="This endpoint retrieves all published tests with optional filters and pagination",
+)
+def get_published_tests(
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_student)],
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(ge=1, le=100)] = 10,
+    course_title: Optional[str] = None,
+    course_code: Optional[str] = None,
+):
+    """Endpoint to retrieve all published tests with filters
+
+    Args:
+        db (Annotated[Session, Depends): Database session
+        current_user (Annotated[User, Depends): Current authenticated student user
+        page (int, optional): Page number for pagination. Defaults to 1.
+        page_size (int, optional): Number of items per page. Defaults to 10.
+        course_title (Optional[str], optional): Search by course title.
+        course_code (Optional[str], optional): Search by course code.
+    """
+
+    service = TestService(db=db)
+
+    paginated_data = service.list_tests(
+        page=page,
+        page_size=page_size,
+        is_published=True,
+        course_title=course_title,
+        course_code=course_code,
+    )
+
+    test_items = [
+        schemas.TestBaseData(**test.to_dict()) for test in paginated_data.items
+    ]
+
+    paginated_response = schemas.TestsPaginatedData(
+        total_items=paginated_data.total_items,
+        total_pages=paginated_data.total_pages,
+        current_page=paginated_data.current_page,
+        page_size=paginated_data.page_size,
+        items=test_items,
+    )
+
+    return schemas.TestsListResponseModel(
+        status_code=status.HTTP_200_OK,
+        message="Published tests retrieved successfully",
+        data=paginated_response,
+    )
