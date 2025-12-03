@@ -9,7 +9,7 @@ from app.api.v1.questions import schemas
 from app.api.services.question import QuestionService
 from app.api.models.user import User
 
-question_router = APIRouter(tags=["Question Management"])
+question_router = APIRouter(prefix="/admin", tags=["Admin Question Management"])
 
 
 @question_router.post(

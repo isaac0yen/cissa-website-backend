@@ -9,7 +9,7 @@ from app.api.v1.tests import schemas
 from app.api.services.test import TestService
 from app.api.models.user import User
 
-test_router = APIRouter(prefix="/tests", tags=["Test Management"])
+test_router = APIRouter(prefix="/admin/tests", tags=["Admin Test Management"])
 
 
 @test_router.post(
@@ -84,8 +84,7 @@ def get_all_tests(
     )
 
     test_items = [
-        schemas.TestBaseData(**test.to_dict())
-        for test in paginated_data.items
+        schemas.TestBaseData(**test.to_dict()) for test in paginated_data.items
     ]
 
     paginated_response = schemas.TestsPaginatedData(
