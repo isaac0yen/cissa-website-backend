@@ -9,10 +9,13 @@ from app.api.v1.tests import schemas
 from app.api.services.test import TestService
 from app.api.models.user import User
 
-test_management_router = APIRouter(prefix="/admin/tests", tags=["Admin Test Management"])
+test_management_router = APIRouter(
+    prefix="/admin/tests", tags=["Admin Test Management"]
+)
 test_student_router = APIRouter(prefix="/tests", tags=["Student Test Management"])
 
 # Test Management Endpoints for Admins
+
 
 @test_management_router.post(
     path="/",
@@ -263,7 +266,9 @@ def delete_test(
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+
 # Student Test Management Endpoints
+
 
 # endpoint to get only published tests for students
 @test_student_router.get(
@@ -318,4 +323,37 @@ def get_published_tests(
         status_code=status.HTTP_200_OK,
         message="Published tests retrieved successfully",
         data=paginated_response,
+    )
+
+
+@test_student_router.get(
+    path="/{test_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.TestResponseModel,
+    summary="Get a published test by ID",
+    description="This endpoint retrieves a published test by its ID",
+)
+def get_published_test_by_id(
+    test_id: str,
+    db: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_student)],
+):
+    """Endpoint to retrieve a published test by its ID
+
+    Args:
+        test_id (str): ID of the test to retrieve
+        db (Annotated[Session, Depends): Database session
+        current_user (Annotated[User, Depends): Current authenticated student user
+    """
+
+    service = TestService(db=db)
+
+    test = service.get_published_by_id(test_id=test_id)
+    
+    response_data = schemas.TestBaseData(**test.to_dict())
+
+    return schemas.TestResponseModel(
+        status_code=status.HTTP_200_OK,
+        message="Test retrieved successfully",
+        data=response_data,
     )

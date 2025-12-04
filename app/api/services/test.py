@@ -60,6 +60,27 @@ class TestService:
             )
         return test
 
+    def get_published_by_id(self, test_id: str) -> Test:
+        """
+        Retrieves a published test by ID
+
+        Args:
+            test_id (str): ID of the test to retrieve
+
+        Returns:
+            Test: Test object
+        """
+
+        test = self.repository.get(test_id)
+        is_published = test.is_published if test else False
+
+        if not test or not is_published:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Test not found",
+            )
+        return test
+
     def list_tests(
         self,
         page: int = 1,
