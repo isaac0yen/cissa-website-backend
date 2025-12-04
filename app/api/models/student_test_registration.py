@@ -20,7 +20,7 @@ class StudentTestRegistration(BaseTableModel):
     payment_id = Column(
         String,
         ForeignKey("payments.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,  # Allow direct registration without payment
         unique=True,
     )
 
