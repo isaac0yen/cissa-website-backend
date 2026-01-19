@@ -29,8 +29,11 @@ class TestAttempt(BaseTableModel):
     max_score = Column(Integer, nullable=False)
     status = Column(
         String, nullable=False, default="in_progress", index=True
-    )  # 'in_progress', 'completed', 'abandoned'
+    )  # 'in_progress', 'submitted', 'expired'
     started_at = Column(DateTime(timezone=True), nullable=False)
+    expires_at = Column(
+        DateTime(timezone=True), nullable=False
+    )  # Server-side expiration
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
@@ -52,6 +55,7 @@ class TestAttempt(BaseTableModel):
             "max_score": self.max_score,
             "status": self.status,
             "started_at": self.started_at,
+            "expires_at": self.expires_at,
             "completed_at": self.completed_at,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
