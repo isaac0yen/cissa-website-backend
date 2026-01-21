@@ -50,8 +50,6 @@ class AttemptQuestionRepository(BaseRepository):
             )
             attempt_questions.append(attempt_question)
 
-        self.db.add_all(attempt_questions)
-        self.db.commit()
-        for aq in attempt_questions:
-            self.db.refresh(aq)
+        self.create_bulk(attempt_questions)
+
         return attempt_questions
