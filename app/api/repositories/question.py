@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, Query
+from sqlalchemy.orm import Session, Query, func
 
 from app.core.base.repository import BaseRepository
 from app.api.models.test import Question, QuestionOption
@@ -15,6 +15,22 @@ class QuestionRepository(BaseRepository[Question]):
 
     def __init__(self, db: Session):
         super().__init__(Question, db)
+
+    def get_random_questions_by_test_id(self, test_id: str, limit: int) -> list[Question]:
+        """Get random questions by test_id.
+        Args:
+            test_id (str): The test_id to filter by.
+            limit (int): The number of random questions to retrieve.
+        Returns:
+            list[Question]: List of random Question objects.
+        """
+        return (
+            self.db.query(self.model)
+            .filter(self.model.test_id == test_id)
+            .order_by(func.random())
+            .limit(limit)
+            .all()
+        )
 
     def filter_by_test_id(
         self, query: Query[Question], test_id: str
