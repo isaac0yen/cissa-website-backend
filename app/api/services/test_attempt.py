@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 from app.api.models.test_attempt import TestAttempt
+from app.api.models.user import User
 from app.api.repositories.question import QuestionRepository, QuestionOptionRepository
 from app.api.repositories.test import TestRepository
 from app.api.repositories.registration import RegistrationRepository
@@ -34,7 +35,7 @@ class TestAttemptService:
         self.registration_repository = RegistrationRepository(db)
         self.student_profile_repository = StudentProfileRepository(db)
 
-    def create_test_attempt(self, registration_id: str) -> FullAttemptData:
+    def create_test_attempt(self, current_user: User, registration_id: str) -> FullAttemptData:
         """
         Create a new TestAttempt for a given registration ID, and populate it with associated AttemptQuestions.
 
@@ -66,6 +67,17 @@ class TestAttemptService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Student profile not found.",
             )
+        
+        # validate the current user matches the registration student
+        if student_profile.user_id != current_user.id:
+            logger.error(
+                f"User ID {current_user.id} is not authorized to create attempt for registration ID {registration_id}."
+            )
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to create an attempt for this registration.",
+            )
+
 
         # Validate test existence
         test = self.test_repository.get(registration.test_id)
