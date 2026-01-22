@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session, Query, func
+from sqlalchemy.orm import Session, Query
+from sqlalchemy.sql import func
 
 from app.core.base.repository import BaseRepository
 from app.api.models.test import Question, QuestionOption
