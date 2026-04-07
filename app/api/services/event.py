@@ -226,7 +226,7 @@ class EventService:
         title: Optional[str] = None,
         location_type: Optional[str] = None,
         past: Optional[bool] = None,
-    ) -> PaginatedResponse[Event]:
+    ) -> PaginatedResponse:
         """Lists events with pagination and optional filters.
         upcoming by default, but can also filter for past events based on the 'past' parameter.
 
