@@ -83,7 +83,7 @@ class EventService:
             # delete the uploaded image from supabase storage if event update fails
             if new_event.image_url:
                 try:
-                    await delete_image_from_supabase(image_path)
+                    delete_image_from_supabase("events", image_path)
                     logger.info(
                         f"Deleted image from Supabase storage at path '{image_path}' due to event update failure"
                     )
@@ -253,4 +253,4 @@ class EventService:
         if title:
             query = self.repository.search_by_title(query, title)
 
-        self.repository.paginate(query, page, page_size)
+        return self.repository.paginate(query, page, page_size)
