@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, Literal
 
 from app.api.models.event import Event
 from app.api.repositories.event import EventRepository
@@ -224,18 +224,17 @@ class EventService:
         page: int = 1,
         page_size: int = 10,
         title: Optional[str] = None,
-        location_type: Optional[str] = None,
-        past: Optional[bool] = None,
+        location_type: Optional[Literal["physical", "online"]] = None,
+        time_status: Optional[Literal["upcoming", "past"]] = None,
     ) -> PaginatedResponse:
         """Lists events with pagination and optional filters.
-        upcoming by default, but can also filter for past events based on the 'past' parameter.
 
         Args:
             page (int): The page number for pagination (default is 1).
             page_size (int): The number of items per page for pagination (default is 10).
             title (Optional[str]): Filter events by title (case-insensitive, partial match).
-            location_type (Optional[str]): Filter events by location type (case-insensitive).
-            past (Optional[bool]): If True, filter for past events (end date in the past).
+            location_type (Optional[Literal["physical", "online"]]): Filter events by location type ('physical' or 'online').
+            time_status (Optional[Literal["upcoming", "past"]]): Filter events by time status ('upcoming' or 'past').
 
         Returns:
             PaginatedResponse[Event]: A paginated response containing the list of events and pagination metadata.
@@ -243,9 +242,9 @@ class EventService:
         query = self.repository.base_query()
 
         # apply filters
-        if past:
+        if time_status == "past":
             query = self.repository.filter_past_events(query)
-        else:
+        elif time_status == "upcoming":
             query = self.repository.filter_upcoming_events(query)
 
         if location_type:

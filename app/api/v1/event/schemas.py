@@ -4,7 +4,7 @@ from typing import Annotated, Literal, Optional
 from fastapi import UploadFile
 from pydantic import BaseModel, StringConstraints
 
-from app.core.base.schema import BaseResponseModel, PaginatedResponseModel
+from app.core.base.schema import BaseResponseModel, PaginatedResponse
 
 
 class EventForm(BaseModel):
@@ -57,6 +57,9 @@ class EventResponseData(BaseModel):
 class EventResponseModel(BaseResponseModel):
     data: EventResponseData
 
+class EventPaginatedResponse(PaginatedResponse):
+    items: list[EventResponseData]
 
-class EventsListResponseModel(PaginatedResponseModel):
-    pass
+
+class EventsListResponseModel(BaseResponseModel):
+    data: EventPaginatedResponse

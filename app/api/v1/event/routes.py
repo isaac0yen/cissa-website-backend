@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Literal
 
 from fastapi import APIRouter, Depends, Form, Response, status
 from sqlalchemy.orm import Session
@@ -25,8 +25,8 @@ def get_all_events(
     page: int = 1,
     page_size: int = 10,
     title: Optional[str] = None,
-    location_type: Optional[str] = None,
-    past: Optional[bool] = None,
+    location_type: Optional[Literal["physical", "online"]] = None,
+    time_status: Optional[Literal["upcoming", "past"]] = None,
 ):
     """Endpoint to retrieve events with pagination and filters.
 
@@ -35,8 +35,8 @@ def get_all_events(
         page (int, optional): Page number for pagination. Defaults to 1.
         page_size (int, optional): Number of items per page. Defaults to 10.
         title (Optional[str], optional): Filter by event title.
-        location_type (Optional[str], optional): Filter by location type.
-        past (Optional[bool], optional): Filter past events when true.
+        location_type (Optional[Literal["physical", "online"]], optional): Filter by location type.
+        time_status (Optional[Literal["upcoming", "past"]], optional): Filter events by time status ('upcoming' or 'past').
     """
 
     service = EventService(db=db)
@@ -46,7 +46,7 @@ def get_all_events(
         page_size=page_size,
         title=title,
         location_type=location_type,
-        past=past,
+        time_status=time_status,
     )
 
     paginated_data.items = [
