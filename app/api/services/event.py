@@ -154,7 +154,7 @@ class EventService:
                 detail="An error occurred while updating the event",
             )
 
-    async def delete_event(self, event_id: str) -> None:
+    def delete_event(self, event_id: str) -> None:
         """Deletes an event.
 
         Args:
@@ -176,7 +176,7 @@ class EventService:
         if event.image_url:
             image_path = f"events/{event.id}.{event.image_url.split('.')[-1]}"
             try:
-                await delete_image_from_supabase("events", image_path)
+                delete_image_from_supabase("events", image_path)
                 logger.info(
                     f"Deleted image from Supabase storage at path '{image_path}' for event with ID '{event_id}'"
                 )
@@ -191,7 +191,7 @@ class EventService:
 
         # delete the event from the database
         try:
-            self.repository.delete(event)
+            self.repository.delete(event_id)
             logger.info(f"Event with ID '{event_id}' deleted successfully")
         except Exception as e:
             logger.error(f"Error deleting event with ID '{event_id}': {str(e)}")

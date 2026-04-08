@@ -165,7 +165,7 @@ async def update_event(
     summary="Delete an existing event",
     description="This endpoint deletes an existing event",
 )
-async def delete_event(
+def delete_event(
     event_id: str,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
@@ -180,6 +180,6 @@ async def delete_event(
 
     service = EventService(db=db)
 
-    await service.delete_event(event_id=event_id)
+    service.delete_event(event_id=event_id)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
