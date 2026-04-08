@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import UploadFile
 
 from pydantic import BaseModel, StringConstraints
-from app.core.base.schema import BaseResponseModel,PaginatedResponseModel
+from app.core.base.schema import BaseResponseModel,PaginatedResponse
 # create signatory request schema
 class SignatoryRequest(BaseModel):
     name: Annotated[str, StringConstraints(max_length=255)]
@@ -46,8 +46,11 @@ class AnnouncementResponseModel(BaseResponseModel):
 class SignatoryResponseModel(BaseResponseModel):
     data: SignatoryResponseData
 
-class AnnouncementsListResponseModel(PaginatedResponseModel):
-    pass
+class AnnouncementPaginatedResponse(PaginatedResponse):
+    items: list[AnnouncementResponse]
+
+class AnnouncementsListResponseModel(BaseResponseModel):
+    data: AnnouncementPaginatedResponse | PaginatedResponse
 
 class SignatoriesListResponseModel(BaseResponseModel):
     data: List[SignatoryResponseData]

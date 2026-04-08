@@ -62,4 +62,4 @@ class EventPaginatedResponse(PaginatedResponse):
 
 
 class EventsListResponseModel(BaseResponseModel):
-    data: EventPaginatedResponse
+    data: EventPaginatedResponse | PaginatedResponse
