@@ -32,11 +32,16 @@ class EventRepository(BaseRepository[Event]):
     # filter past events (events that have an end date in the past)
     def filter_past_events(self, query: Query[Event]) -> Query[Event]:
         """Filter past events (events that have an end date in the past).
+        for events where end date is null, we can use the start date to determine if it's a past event or not
 
         Returns:
             Query[Event]: A SQLAlchemy query object with the applied filter.
         """
-        return query.filter(self.model.end_date < func.current_date())
+        
+        return query.filter(
+            (self.model.end_date < func.current_date()) |
+            ((self.model.end_date == None) & (self.model.start_date < func.current_date()))  # noqa: E711
+        )
 
     def search_by_title(self, query: Query[Event], title: Optional[str]) -> Query[Event]:
         """Search events by title (case-insensitive).
@@ -66,3 +71,4 @@ class EventRepository(BaseRepository[Event]):
         if location_type:
             return query.filter(self.model.location_type == location_type)
         return query
+    

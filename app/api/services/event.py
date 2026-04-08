@@ -58,7 +58,7 @@ class EventService:
                 f"Uploading image for event with title '{new_event.title}' to Supabase storage at path '{image_path}'"
             )
             new_event.image_url = await upload_image_to_supabase(
-                schema.image.file, "events", image_path
+                schema.image, "events", image_path
             )
         except Exception as e:
             logger.error(
@@ -131,7 +131,7 @@ class EventService:
                     f"Uploading new image for event with ID '{event_id}' to Supabase storage at path '{image_path}'"
                 )
                 event.image_url = await upload_image_to_supabase(
-                    schema.image.file, "events", image_path
+                    schema.image, "events", image_path
                 )
             except Exception as e:
                 logger.error(
