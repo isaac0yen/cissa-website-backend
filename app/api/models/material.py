@@ -3,6 +3,7 @@
 from sqlalchemy import Column, String, Table, Text, ForeignKey
 from sqlalchemy.orm import relationship
 
+from app.db.database import Base
 from app.core.base.model import BaseTableModel
 
 
@@ -10,13 +11,13 @@ material_departments = Table(
     'material_departments',
     BaseTableModel.metadata,
     Column('material_id', String, ForeignKey('materials.id'), primary_key=True),
-    Column('department_id', String, ForeignKey('departments.id'), primary_key=True)
+    Column('department_name', String, ForeignKey('departments.name'), primary_key=True)
 )
 
-class Department(BaseTableModel):
+class Department(Base):
     __tablename__ = "departments"
 
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, primary_key=True, index=True)
 
     materials = relationship(
         "Material",
@@ -27,7 +28,6 @@ class Department(BaseTableModel):
 
     def to_dict(self):
         return {
-            "id": self.id,
             "name": self.name,
         }
 
