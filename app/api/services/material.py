@@ -175,7 +175,7 @@ class MaterialService:
         query = self.repository.base_query()
 
         # apply filters
-        query = self.repository.filter_by_title(query, title)
+        query = self.repository.search_by_title(query, title)
         query = self.repository.filter_by_department(query, department)
         query = self.repository.filter_by_course_code(query, course_code)
         query = self.repository.filter_by_level(query, level)
