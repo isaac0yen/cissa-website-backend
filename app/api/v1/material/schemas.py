@@ -1,13 +1,13 @@
-from datetime import date, datetime, time
-from typing import Annotated, Literal, Optional
+from datetime import datetime
+from typing import Literal, Optional
 
-from pydantic import BaseModel, StringConstraints
+from pydantic import BaseModel
 
 from app.core.base.schema import BaseResponseModel, PaginatedResponse
 
 LevelType = Literal["100", "200", "300", "400"]
 SemesterType = Literal["harmattan", "rain"]
-DepartmentType = Literal["csc", "ift", "lis", "tcs", "mac"]
+DepartmentType = Literal["CSC", "IFT", "LIS", "TCS", "MAC"]
 
 class MaterialRequest(BaseModel):
     title: str
