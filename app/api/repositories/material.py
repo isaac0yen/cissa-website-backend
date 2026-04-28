@@ -5,6 +5,29 @@ from typing import Optional
 from app.core.base.repository import BaseRepository
 from app.api.models.material import Material, Department
 
+class DepartmentRepository(BaseRepository[Department]):
+    """
+    Department repository class for CRUD operations on Department model.
+    This class inherits from BaseRepository and provides specific methods for Department model.
+    Attributes:
+        model (Type[Department]): The SQLAlchemy Department model class.
+        db (Session): The SQLAlchemy session.
+    """
+
+    def __init__(self, db: Session):
+        super().__init__(Department, db)
+
+    def get_by_name(self, name: str) -> Optional[Department]:
+        """Get a department by its name (case-insensitive).
+
+        Args:
+            name (str): The name of the department.
+
+        Returns:
+            Optional[Department]: The Department object if found, else None.
+        """
+        return self.db.query(self.model).filter(func.lower(self.model.name) == func.lower(name)).first()
+
 class MaterialRepository(BaseRepository[Material]):
     """
     Material repository class for CRUD operations on Material model.
