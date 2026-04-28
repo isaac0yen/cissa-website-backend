@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.api.models.material import Material, Department
+from app.api.models.material import Material
 from app.api.repositories.material import MaterialRepository, DepartmentRepository
 from app.api.v1.material import schemas
 from app.core.base.schema import PaginatedResponse
@@ -31,7 +31,7 @@ class MaterialService:
         # fetch departments
         departments = []
         for dept_name in schema.departments:
-            dept = self.department_repository.get_by_name(dept_name)
+            dept = self.department_repository.get(dept_name)
             if not dept:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -75,7 +75,7 @@ class MaterialService:
         if schema.departments is not None:
             departments = []
             for dept_name in schema.departments:
-                dept = self.department_repository.get_by_name(dept_name)
+                dept = self.department_repository.get(dept_name)
                 if not dept:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,

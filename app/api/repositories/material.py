@@ -17,7 +17,7 @@ class DepartmentRepository(BaseRepository[Department]):
     def __init__(self, db: Session):
         super().__init__(Department, db)
 
-    def get_by_name(self, name: str) -> Optional[Department]:
+    def get(self, name: str) -> Optional[Department]:
         """Get a department by its name (case-insensitive).
 
         Args:
