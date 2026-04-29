@@ -8,6 +8,7 @@ from app.api.services.material import MaterialService
 from app.api.v1.material import schemas
 from app.core.dependencies.security import get_current_user
 from app.db.database import get_db
+from app.utils.gdrive_helper import generate_download_link
 
 material = APIRouter(prefix="/materials", tags=["Materials"])
 
@@ -108,6 +109,8 @@ def create_material(
 ):
     service = MaterialService(db=db)
 
+    schema.drive_url = generate_download_link(schema.drive_url)
+
     material = service.create(schema)
 
     return schemas.MaterialResponseModel(
@@ -132,6 +135,9 @@ def update_material(
 ):
     service = MaterialService(db=db)
 
+    if schema.drive_url:
+        schema.drive_url = generate_download_link(schema.drive_url)
+    
     updated_material = service.update(material_id, schema)
 
     return schemas.MaterialResponseModel(
