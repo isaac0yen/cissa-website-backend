@@ -29,7 +29,7 @@ def get_all_materials(
     course_code: Optional[str] = None,
     level: Optional[schemas.LevelType] = None,
     semester: Optional[schemas.SemesterType] = None,
-    material_type: Optional[str] = None,
+    material_type: Optional[schemas.MaterialFormatType] = None,
     session: Optional[str] = None,
 ):
     """Endpoint to retrieve materials with pagination and filters.
@@ -43,7 +43,7 @@ def get_all_materials(
         course_code (Optional[str], optional): Filter by course code.
         level (Optional[schemas.LevelType], optional): Filter by material level.
         semester (Optional[schemas.SemesterType], optional): Filter by semester.
-        material_type (Optional[str], optional): Filter by material type.
+        material_type (Optional[schemas.MaterialFormatType], optional): Filter by material type.
         session (Optional[str], optional): Filter by session.
     """
 

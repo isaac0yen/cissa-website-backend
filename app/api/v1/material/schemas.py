@@ -8,6 +8,7 @@ from app.core.base.schema import BaseResponseModel, PaginatedResponse
 LevelType = Literal["100", "200", "300", "400"]
 SemesterType = Literal["harmattan", "rain"]
 DepartmentType = Literal["CSC", "IFT", "LIS", "TCS", "MAC"]
+MaterialFormatType = Literal["lecture_notes", "past_questions", "textbook"]
 
 
 class MaterialRequest(BaseModel):
@@ -17,7 +18,7 @@ class MaterialRequest(BaseModel):
     course_title: str
     level: LevelType
     semester: SemesterType
-    material_type: str
+    material_type: MaterialFormatType
     drive_url: str
     session: str
     departments: list[DepartmentType]
@@ -30,7 +31,7 @@ class MaterialUpdateRequest(BaseModel):
     course_title: Optional[str] = None
     level: Optional[LevelType] = None
     semester: Optional[SemesterType] = None
-    material_type: Optional[str] = None
+    material_type: Optional[MaterialFormatType] = None
     drive_url: Optional[str] = None
     session: Optional[str] = None
     departments: Optional[list[DepartmentType]] = None
@@ -44,7 +45,7 @@ class MaterialResponseData(BaseModel):
     course_title: str
     level: LevelType
     semester: SemesterType
-    material_type: str
+    material_type: MaterialFormatType
     drive_url: str
     session: Optional[str]
     departments: list[DepartmentType]

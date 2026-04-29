@@ -160,7 +160,7 @@ class MaterialService:
         course_code: Optional[str] = None,
         level: Optional[schemas.LevelType] = None,
         semester: Optional[schemas.SemesterType] = None,
-        material_type: Optional[str] = None,
+        material_type: Optional[schemas.MaterialFormatType] = None,
         session: Optional[str] = None,
     ) -> PaginatedResponse:
         """
@@ -174,7 +174,7 @@ class MaterialService:
             course_code (Optional[str]): Filter by course code (case-insensitive).
             level (Optional[schemas.LevelType]): Filter by level (case-insensitive).
             semester (Optional[schemas.SemesterType]): Filter by semester (case-insensitive).
-            material_type (Optional[str]): Filter by material type (case-insensitive).
+            material_type (Optional[schemas.MaterialFormatType]): Filter by material type (case-insensitive).
             session (Optional[str]): Filter by session (case-insensitive).
         Returns:
             PaginatedResponse: A paginated response containing the list of materials.
