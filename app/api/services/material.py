@@ -8,6 +8,7 @@ from app.api.v1.material import schemas
 from app.core.base.schema import PaginatedResponse
 from app.utils.logger import logger
 
+
 class MaterialService:
     """
     Service class for handling material-related operations.
@@ -35,7 +36,7 @@ class MaterialService:
             if not dept:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Department '{dept_name}' not found."
+                    detail=f"Department '{dept_name}' not found.",
                 )
             departments.append(dept)
 
@@ -44,16 +45,20 @@ class MaterialService:
         material.departments = departments
 
         try:
-            logger.info(f"Creating material: {material.id} - {material.title} - {material.course_code}")
+            logger.info(
+                f"Creating material: {material.id} - {material.title} - {material.course_code}"
+            )
             return self.repository.create(material)
         except Exception as e:
             logger.error(f"Error creating material: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occurred while creating the material."
+                detail="An error occurred while creating the material.",
             )
-        
-    def update(self, material_id: str, schema: schemas.MaterialUpdateRequest) -> Material:
+
+    def update(
+        self, material_id: str, schema: schemas.MaterialUpdateRequest
+    ) -> Material:
         """
         Updates an existing material
 
@@ -67,8 +72,7 @@ class MaterialService:
         material = self.repository.get(material_id)
         if not material:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Material not found."
+                status_code=status.HTTP_404_NOT_FOUND, detail="Material not found."
             )
 
         # fetch departments if provided
@@ -79,7 +83,7 @@ class MaterialService:
                 if not dept:
                     raise HTTPException(
                         status_code=status.HTTP_404_NOT_FOUND,
-                        detail=f"Department '{dept_name}' not found."
+                        detail=f"Department '{dept_name}' not found.",
                     )
                 departments.append(dept)
             material.departments = departments
@@ -89,15 +93,17 @@ class MaterialService:
             setattr(material, key, value)
 
         try:
-            logger.info(f"Updating material: {material.id} - {material.title} - {material.course_code}")
+            logger.info(
+                f"Updating material: {material.id} - {material.title} - {material.course_code}"
+            )
             return self.repository.update(material)
         except Exception as e:
             logger.error(f"Error updating material: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occurred while updating the material."
+                detail="An error occurred while updating the material.",
             )
-        
+
     def delete(self, material_id: str) -> None:
         """
         Deletes a material by its ID.
@@ -110,20 +116,21 @@ class MaterialService:
         material = self.repository.get(material_id)
         if not material:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Material not found."
+                status_code=status.HTTP_404_NOT_FOUND, detail="Material not found."
             )
 
         try:
-            logger.info(f"Deleting material: {material.id} - {material.title} - {material.course_code}")
+            logger.info(
+                f"Deleting material: {material.id} - {material.title} - {material.course_code}"
+            )
             self.repository.delete(material)
         except Exception as e:
             logger.error(f"Error deleting material: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An error occurred while deleting the material."
+                detail="An error occurred while deleting the material.",
             )
-        
+
     def get(self, material_id: str) -> Material:
         """
         Retrieves a material by its ID.
@@ -137,12 +144,13 @@ class MaterialService:
         if not material:
             logger.error(f"Material with ID '{material_id}' not found.")
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Material not found."
+                status_code=status.HTTP_404_NOT_FOUND, detail="Material not found."
             )
-        logger.info(f"Material retrieved: {material.id} - {material.title} - {material.course_code}")
+        logger.info(
+            f"Material retrieved: {material.id} - {material.title} - {material.course_code}"
+        )
         return material
-    
+
     def list(
         self,
         page: int = 1,

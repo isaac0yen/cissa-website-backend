@@ -1,4 +1,4 @@
-from typing import Annotated, Optional, Literal
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy.orm import Session
@@ -10,6 +10,7 @@ from app.core.dependencies.security import get_current_user
 from app.db.database import get_db
 
 material = APIRouter(prefix="/materials", tags=["Materials"])
+
 
 @material.get(
     path="/",
@@ -60,7 +61,8 @@ def get_all_materials(
     )
 
     paginated_data.items = [
-        schemas.MaterialResponseData(**material.to_dict()) for material in paginated_data.items
+        schemas.MaterialResponseData(**material.to_dict())
+        for material in paginated_data.items
     ]
 
     return schemas.MaterialsListResponseModel(
@@ -68,6 +70,7 @@ def get_all_materials(
         message="Materials retrieved successfully",
         data=paginated_data,
     )
+
 
 @material.get(
     path="/{material_id}",
@@ -80,7 +83,6 @@ def get_material_by_id(
     material_id: str,
     db: Annotated[Session, Depends(get_db)],
 ):
-
     service = MaterialService(db=db)
 
     material = service.get(material_id)
@@ -90,6 +92,7 @@ def get_material_by_id(
         message="Material retrieved successfully",
         data=schemas.MaterialResponseData(**material.to_dict()),
     )
+
 
 @material.post(
     path="/",
@@ -103,7 +106,6 @@ def create_material(
     db: Annotated[Session, Depends(get_db)],
     _: Annotated[User, Depends(get_current_user)],
 ):
-
     service = MaterialService(db=db)
 
     material = service.create(schema)
@@ -113,6 +115,7 @@ def create_material(
         message="Material created successfully",
         data=schemas.MaterialResponseData(**material.to_dict()),
     )
+
 
 @material.put(
     path="/{material_id}",
@@ -127,7 +130,6 @@ def update_material(
     db: Annotated[Session, Depends(get_db)],
     _: Annotated[User, Depends(get_current_user)],
 ):
-
     service = MaterialService(db=db)
 
     updated_material = service.update(material_id, schema)
@@ -137,6 +139,7 @@ def update_material(
         message="Material updated successfully",
         data=schemas.MaterialResponseData(**updated_material.to_dict()),
     )
+
 
 @material.delete(
     path="/{material_id}",

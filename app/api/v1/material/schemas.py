@@ -9,6 +9,7 @@ LevelType = Literal["100", "200", "300", "400"]
 SemesterType = Literal["harmattan", "rain"]
 DepartmentType = Literal["CSC", "IFT", "LIS", "TCS", "MAC"]
 
+
 class MaterialRequest(BaseModel):
     title: str
     description: str
@@ -21,6 +22,7 @@ class MaterialRequest(BaseModel):
     session: str
     departments: list[DepartmentType]
 
+
 class MaterialUpdateRequest(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
@@ -32,6 +34,7 @@ class MaterialUpdateRequest(BaseModel):
     drive_url: Optional[str] = None
     session: Optional[str] = None
     departments: Optional[list[DepartmentType]] = None
+
 
 class MaterialResponseData(BaseModel):
     id: str
@@ -48,11 +51,14 @@ class MaterialResponseData(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class MaterialResponseModel(BaseResponseModel):
     data: MaterialResponseData
 
+
 class MaterialPaginatedResponse(PaginatedResponse):
     items: list[MaterialResponseData]
+
 
 class MaterialsListResponseModel(BaseResponseModel):
     data: MaterialPaginatedResponse | PaginatedResponse

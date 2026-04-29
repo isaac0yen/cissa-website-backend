@@ -5,6 +5,7 @@ from typing import Optional
 from app.core.base.repository import BaseRepository
 from app.api.models.material import Material, Department
 
+
 class DepartmentRepository(BaseRepository[Department]):
     """
     Department repository class for CRUD operations on Department model.
@@ -26,7 +27,12 @@ class DepartmentRepository(BaseRepository[Department]):
         Returns:
             Optional[Department]: The Department object if found, else None.
         """
-        return self.db.query(self.model).filter(func.lower(self.model.name) == func.lower(name)).first()
+        return (
+            self.db.query(self.model)
+            .filter(func.lower(self.model.name) == func.lower(name))
+            .first()
+        )
+
 
 class MaterialRepository(BaseRepository[Material]):
     """
@@ -42,7 +48,9 @@ class MaterialRepository(BaseRepository[Material]):
 
     # filter and search methods
 
-    def search_by_title(self, query: Query[Material], title: Optional[str]) -> Query[Material]:
+    def search_by_title(
+        self, query: Query[Material], title: Optional[str]
+    ) -> Query[Material]:
         """Search materials by title (case-insensitive).
 
         Args:
@@ -54,8 +62,10 @@ class MaterialRepository(BaseRepository[Material]):
         if title:
             return query.filter(self.model.title.ilike(f"%{title}%"))
         return query
-    
-    def filter_by_department(self, query: Query[Material], department_name: Optional[str]) -> Query[Material]:
+
+    def filter_by_department(
+        self, query: Query[Material], department_name: Optional[str]
+    ) -> Query[Material]:
         """Filter materials by department name (case-insensitive).
 
         Args:
@@ -65,10 +75,14 @@ class MaterialRepository(BaseRepository[Material]):
             Query[Material]: A SQLAlchemy query object with the applied filter.
         """
         if department_name:
-            return query.join(self.model.departments).filter(func.lower(Department.name) == func.lower(department_name))
+            return query.join(self.model.departments).filter(
+                func.lower(Department.name) == func.lower(department_name)
+            )
         return query
-    
-    def filter_by_course_code(self, query: Query[Material], course_code: Optional[str]) -> Query[Material]:
+
+    def filter_by_course_code(
+        self, query: Query[Material], course_code: Optional[str]
+    ) -> Query[Material]:
         """Filter materials by course code (case-insensitive).
 
         Args:
@@ -78,10 +92,14 @@ class MaterialRepository(BaseRepository[Material]):
             Query[Material]: A SQLAlchemy query object with the applied filter.
         """
         if course_code:
-            return query.filter(func.lower(self.model.course_code) == func.lower(course_code))
+            return query.filter(
+                func.lower(self.model.course_code) == func.lower(course_code)
+            )
         return query
-    
-    def filter_by_level(self, query: Query[Material], level: Optional[str]) -> Query[Material]:
+
+    def filter_by_level(
+        self, query: Query[Material], level: Optional[str]
+    ) -> Query[Material]:
         """Filter materials by level (case-insensitive).
 
         Args:
@@ -93,8 +111,10 @@ class MaterialRepository(BaseRepository[Material]):
         if level:
             return query.filter(func.lower(self.model.level) == func.lower(level))
         return query
-    
-    def filter_by_semester(self, query: Query[Material], semester: Optional[str]) -> Query[Material]:
+
+    def filter_by_semester(
+        self, query: Query[Material], semester: Optional[str]
+    ) -> Query[Material]:
         """Filter materials by semester (case-insensitive).
 
         Args:
@@ -106,8 +126,10 @@ class MaterialRepository(BaseRepository[Material]):
         if semester:
             return query.filter(func.lower(self.model.semester) == func.lower(semester))
         return query
-    
-    def filter_by_material_type(self, query: Query[Material], material_type: Optional[str]) -> Query[Material]:
+
+    def filter_by_material_type(
+        self, query: Query[Material], material_type: Optional[str]
+    ) -> Query[Material]:
         """Filter materials by material type (case-insensitive).
 
         Args:
@@ -117,10 +139,14 @@ class MaterialRepository(BaseRepository[Material]):
             Query[Material]: A SQLAlchemy query object with the applied filter.
         """
         if material_type:
-            return query.filter(func.lower(self.model.material_type) == func.lower(material_type))
+            return query.filter(
+                func.lower(self.model.material_type) == func.lower(material_type)
+            )
         return query
-    
-    def filter_by_session(self, query: Query[Material], session: Optional[str]) -> Query[Material]:
+
+    def filter_by_session(
+        self, query: Query[Material], session: Optional[str]
+    ) -> Query[Material]:
         """Filter materials by session (case-insensitive).
 
         Args:
