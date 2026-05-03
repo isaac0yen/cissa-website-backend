@@ -35,12 +35,18 @@ class EventRepository(BaseRepository[Event]):
         """
 
         return query.filter(
-            (self.model.start_date > func.current_date()) |
-            ((self.model.start_date == func.current_date()) & (self.model.start_time > func.current_time())) |
-            (self.model.end_date > func.current_date()) |
-            ((self.model.end_date == func.current_date()) & (self.model.end_time > func.current_time()))
+            (self.model.start_date > func.current_date())
+            | (
+                (self.model.start_date == func.current_date())
+                & (self.model.start_time > func.current_time())
+            )
+            | (self.model.end_date > func.current_date())
+            | (
+                (self.model.end_date == func.current_date())
+                & (self.model.end_time > func.current_time())
+            )
         )
-    
+
     # filter past events (events that have an end date in the past)
     def filter_past_events(self, query: Query[Event]) -> Query[Event]:
         """Filter past events
@@ -57,14 +63,30 @@ class EventRepository(BaseRepository[Event]):
         """
 
         return query.filter(
-            (self.model.end_date < func.current_date()) |
-            ((self.model.end_date == func.current_date()) & (self.model.end_time < func.current_time())) |
-            ((self.model.end_date == func.current_date()) & (self.model.end_time is None) & (self.model.start_time < func.current_time())) |
-            ((self.model.end_date is None) & (self.model.start_date < func.current_date())) |
-            ((self.model.end_date is None) & (self.model.start_date == func.current_date()) & (self.model.start_time < func.current_time()))
+            (self.model.end_date < func.current_date())
+            | (
+                (self.model.end_date == func.current_date())
+                & (self.model.end_time < func.current_time())
+            )
+            | (
+                (self.model.end_date == func.current_date())
+                & (self.model.end_time == None) # noqa: E711
+                & (self.model.start_time < func.current_time())
+            )
+            | (
+                (self.model.end_date == None) # noqa: E711
+                & (self.model.start_date < func.current_date())
+            )
+            | (
+                (self.model.end_date == None) # noqa: E711
+                & (self.model.start_date == func.current_date())
+                & (self.model.start_time < func.current_time())
+            )
         )
 
-    def search_by_title(self, query: Query[Event], title: Optional[str]) -> Query[Event]:
+    def search_by_title(
+        self, query: Query[Event], title: Optional[str]
+    ) -> Query[Event]:
         """Search events by title (case-insensitive).
 
         Args:
@@ -76,11 +98,12 @@ class EventRepository(BaseRepository[Event]):
         if title:
             return query.filter(self.model.title.ilike(f"%{title}%"))
         return query
-    
-    
+
     # filter based on location type (e.g., online, in-person)
     # there are only two location types, so we can use an enum for this in the future
-    def filter_by_location_type(self, query: Query[Event], location_type: Optional[str]) -> Query[Event]:
+    def filter_by_location_type(
+        self, query: Query[Event], location_type: Optional[str]
+    ) -> Query[Event]:
         """Filter events by location type (case-insensitive).
 
         Args:
@@ -92,4 +115,3 @@ class EventRepository(BaseRepository[Event]):
         if location_type:
             return query.filter(self.model.location_type == location_type)
         return query
-    
