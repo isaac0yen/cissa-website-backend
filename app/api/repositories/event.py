@@ -22,25 +22,46 @@ class EventRepository(BaseRepository[Event]):
 
     # filter upcoming events (events that have a start date in the future)
     def filter_upcoming_events(self, query: Query[Event]) -> Query[Event]:
-        """Filter upcoming events (events that have a start date in the future).
+        """Filter upcoming events
+
+        Filter based on start date and time
+            - If the start date is in the future, it's an upcoming event.
+            - If the start date is today and the start time is in the future, it's an upcoming event.
+            - If the end date is in the future, it's an upcoming event.
+            - If the end date is today and the end time is in the future, it's an upcoming event.
 
         Returns:
             Query[Event]: A SQLAlchemy query object with the applied filter.
         """
-        return query.filter(self.model.start_date >= func.current_date())
+
+        return query.filter(
+            (self.model.start_date > func.current_date()) |
+            ((self.model.start_date == func.current_date()) & (self.model.start_time > func.current_time())) |
+            (self.model.end_date > func.current_date()) |
+            ((self.model.end_date == func.current_date()) & (self.model.end_time > func.current_time()))
+        )
     
     # filter past events (events that have an end date in the past)
     def filter_past_events(self, query: Query[Event]) -> Query[Event]:
-        """Filter past events (events that have an end date in the past).
-        for events where end date is null, we can use the start date to determine if it's a past event or not
+        """Filter past events
+
+        Filter based on end date and time
+            - If the end date is in the past, it's a past event.
+            - If the end date is today and the end time is in the past, it's a past event.
+            - If the end date is today and the end time is null and the start time is in the past, it's a past event.
+            - If the end date is null and the start date is in the past, it's a past event.
+            - If the end date is null and the start date is today and the start time is in the past, it's a past event.
 
         Returns:
             Query[Event]: A SQLAlchemy query object with the applied filter.
         """
-        
+
         return query.filter(
             (self.model.end_date < func.current_date()) |
-            ((self.model.end_date == None) & (self.model.start_date < func.current_date()))  # noqa: E711
+            ((self.model.end_date == func.current_date()) & (self.model.end_time < func.current_time())) |
+            ((self.model.end_date == func.current_date()) & (self.model.end_time is None) & (self.model.start_time < func.current_time())) |
+            ((self.model.end_date is None) & (self.model.start_date < func.current_date())) |
+            ((self.model.end_date is None) & (self.model.start_date == func.current_date()) & (self.model.start_time < func.current_time()))
         )
 
     def search_by_title(self, query: Query[Event], title: Optional[str]) -> Query[Event]:
