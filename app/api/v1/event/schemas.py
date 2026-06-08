@@ -40,6 +40,7 @@ class EventUpdateForm(BaseModel):
 class EventResponseData(BaseModel):
     id: str
     title: str
+    slug: str
     description: str
     image_url: Optional[str]
     location: str

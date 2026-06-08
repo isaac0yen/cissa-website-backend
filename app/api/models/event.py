@@ -9,6 +9,7 @@ class Event(BaseTableModel):
     __tablename__ = "events"
 
     title = Column(String, nullable=False)
+    slug = Column(String, nullable=False, unique=True, index=True)
     description = Column(Text, nullable=False)
     image_url = Column(String, nullable=True)
     location = Column(String, nullable=False)
@@ -25,6 +26,7 @@ class Event(BaseTableModel):
         return {
             "id": self.id,
             "title": self.title,
+            "slug": self.slug,
             "description": self.description,
             "image_url": self.image_url,
             "location": self.location,
