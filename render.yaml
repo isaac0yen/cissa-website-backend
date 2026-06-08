@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: cissa-website-backend
+    runtime: python
+    # Install uv, then sync dependencies from the lockfile
+    buildCommand: "curl -LsSf https://astral.sh/uv/install.sh | sh && $HOME/.local/bin/uv sync"
+    # Free tier has no pre-deploy step, so run migrations at boot, then start the API.
+    # Migrations are idempotent and the free tier runs a single instance (no race).
+    startCommand: "$HOME/.local/bin/uv run alembic upgrade head && $HOME/.local/bin/uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ALGORITHM
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRY
+        sync: false
+      - key: REFRESH_TOKEN_EXPIRY
+        sync: false
+      - key: DATABASE_TYPE
+        sync: false
+      - key: DATABASE_NAME
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: DATABASE_HOST
+        sync: false
+      - key: DATABASE_PORT
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false

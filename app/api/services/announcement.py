@@ -9,6 +9,7 @@ from app.api.repositories.announcement import (
 )
 from app.api.v1.announcement import schemas
 from app.utils.logger import logger
+from app.utils.slug import generate_unique_slug
 from app.utils.supabase_storage import (
     upload_image_to_supabase,
     delete_image_from_supabase,
@@ -144,6 +145,11 @@ class AnnouncementService:
         announcement = Announcement(**announcement_data)
         announcement.id = str(uuid7())
         announcement.signatories = signatories
+
+        # generate a unique SEO-friendly slug from the title
+        announcement.slug = generate_unique_slug(
+            announcement.title, self.repository.slug_exists
+        )
 
         # upload image to supabase storage
         image_path = (
@@ -323,13 +329,13 @@ class AnnouncementService:
         return self.repository.paginate(query, page, page_size)
 
     def get_by_id(self, announcement_id: str) -> Announcement:
-        """Retrieves an announcement by ID
+        """Retrieves an announcement by slug or ID
         Args:
-            announcement_id (str): ID of the announcement to retrieve
+            announcement_id (str): Slug or ID of the announcement to retrieve
         Returns:
             Announcement: Announcement object
         """
-        announcement = self.repository.get(announcement_id)
+        announcement = self.repository.get_by_slug_or_id(announcement_id)
         if not announcement:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

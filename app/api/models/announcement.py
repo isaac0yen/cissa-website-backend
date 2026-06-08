@@ -40,6 +40,7 @@ class Announcement(BaseTableModel):
 
     id = Column(String, primary_key=True, index=True)
     title = Column(String, nullable=False)
+    slug = Column(String, nullable=False, unique=True, index=True)
     image_url = Column(String, nullable=True)
     category = Column(String, nullable=False)
     body = Column(Text, nullable=False)
@@ -56,6 +57,7 @@ class Announcement(BaseTableModel):
         return {
             "id": self.id,
             "title": self.title,
+            "slug": self.slug,
             "image_url": self.image_url,
             "category": self.category,
             "body": self.body,

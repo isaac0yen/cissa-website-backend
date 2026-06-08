@@ -7,6 +7,7 @@ from app.api.repositories.event import EventRepository
 from app.api.v1.event import schemas
 
 from app.utils.logger import logger
+from app.utils.slug import generate_unique_slug
 from app.utils.supabase_storage import (
     upload_image_to_supabase,
     delete_image_from_supabase,
@@ -36,6 +37,11 @@ class EventService:
 
         event_data = schema.model_dump(exclude={"image"})
         event = Event(**event_data)
+
+        # generate a unique SEO-friendly slug from the title
+        event.slug = generate_unique_slug(
+            event.title, self.repository.slug_exists
+        )
 
         # create event first
         try:
@@ -201,22 +207,22 @@ class EventService:
             )
 
     def get_event(self, event_id: str) -> Event:
-        """Retrieves an event by ID.
+        """Retrieves an event by slug or ID.
 
         Args:
-            event_id (str): The ID of the event to retrieve.
+            event_id (str): The slug or ID of the event to retrieve.
 
         Returns:
             Event: The retrieved Event object.
         """
-        event = self.repository.get(event_id)
+        event = self.repository.get_by_slug_or_id(event_id)
         if not event:
-            logger.error(f"Event with ID '{event_id}' not found for retrieval")
+            logger.error(f"Event with identifier '{event_id}' not found for retrieval")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Event not found",
             )
-        logger.info(f"Event with ID '{event_id}' retrieved successfully")
+        logger.info(f"Event with identifier '{event_id}' retrieved successfully")
         return event 
 
     def list_events(
@@ -251,5 +257,10 @@ class EventService:
             query = self.repository.filter_by_location_type(query, location_type)
         if title:
             query = self.repository.search_by_title(query, title)
+
+        # sort by most recent first (by date, then time)
+        query = query.order_by(
+            Event.start_date.desc(), Event.start_time.desc()
+        )
 
         return self.repository.paginate(query, page, page_size)

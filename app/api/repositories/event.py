@@ -18,6 +18,34 @@ class EventRepository(BaseRepository[Event]):
     def __init__(self, db: Session):
         super().__init__(Event, db)
 
+    def get_by_slug_or_id(self, identifier: str) -> Optional[Event]:
+        """Retrieve an event by its slug, falling back to its ID.
+
+        Looks up by slug first (the SEO-friendly identifier); if no match is
+        found, tries the primary key. This keeps legacy UUID links working.
+
+        Args:
+            identifier (str): A slug or an event ID.
+
+        Returns:
+            Optional[Event]: The matching event, or None.
+        """
+        event = (
+            self.db.query(self.model)
+            .filter(self.model.slug == identifier)
+            .first()
+        )
+        if event:
+            return event
+        return self.get(identifier)
+
+    def slug_exists(self, slug: str) -> bool:
+        """Check whether a slug is already used by an event."""
+        return (
+            self.db.query(self.model).filter(self.model.slug == slug).first()
+            is not None
+        )
+
     # filters
 
     # filter upcoming events (events that have a start date in the future)
